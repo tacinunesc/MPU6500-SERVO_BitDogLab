@@ -9,6 +9,12 @@ Este projeto visa criar um firmware para controlar e vizualizar a inclinação d
 acelerômetro (MPU6500), utilizando em conjunto um servo motor, LEDs RGB e um
 display Oled inclusos na placa Raspberry Pi Pico W (BItDogLab).
 
+<div align="center">
+  <img src="img/mpu verde.jpg "  alt="Controle" width="30%">
+  <img src="img/mpu vermelho.jpg "  alt="Controle" width="30%">
+ <img src="img/mpu azul.jpg "  alt="Controle" width="30%">
+</div>
+
 ## 🛠️ Estrutura do projeto
 - aceleroServo.c – Programa principal em C que faz leitura movimento, com base nesta informação utiliza o servo motor girar no especificado no código e essa informação é exibida no porta serial e no visor oled da BitDogLab
 - mpu6500.c - Onde fica as definições do sensor de movimento
