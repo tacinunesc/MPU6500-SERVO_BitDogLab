@@ -56,9 +56,9 @@ A cada segundo, o sistema:
 
    * 🔵 Azul: inclinação neutra, no meio
 
-   * 🟢 Verde: inclinação para cima
+   * 🟢 Verde: inclinação para direita ou cima
 
-   * 🔴 Vermelho: inclinação para baixo
+   * 🔴 Vermelho: inclinação para esquerda ou baixo
  
 3. Controle do servo motor
 - O ângulo do servo é ajustado de acordo os valores de aceleração no eixo x
