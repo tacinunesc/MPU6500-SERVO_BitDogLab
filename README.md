@@ -54,11 +54,11 @@ A cada segundo, o sistema:
 - Exibe o valor no display OLED
 - Acende um LED correspondente ao nível de aceleração:
 
-   * 🔵 Azul: inclinação neutra, no meio
+   * 🔵 Azul: inclinação neutra
 
-   * 🟢 Verde: inclinação para direita ou cima
+   * 🟢 Verde: inclinação para direita 
 
-   * 🔴 Vermelho: inclinação para esquerda ou baixo
+   * 🔴 Vermelho: inclinação para esquerda 
  
 3. Controle do servo motor
 - O ângulo do servo é ajustado de acordo os valores de aceleração no eixo x
