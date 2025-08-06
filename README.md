@@ -10,9 +10,7 @@ acelerômetro (MPU6500), utilizando em conjunto um servo motor, LEDs RGB e um
 display Oled inclusos na placa Raspberry Pi Pico W (BItDogLab).
 
 <div align="center">
-  <img src="img/mpu verde.jpg "  alt="Controle" width="30%">
-  <img src="img/mpu vermelho.jpg "  alt="Controle" width="30%">
- <img src="img/mpu azul.jpg "  alt="Controle" width="30%">
+  <img src="img/mpu.jpg "  alt="Controle" width="50%">
 </div>
 
 ## 🛠️ Estrutura do projeto
@@ -56,9 +54,9 @@ A cada segundo, o sistema:
 
    * 🔵 Azul: inclinação neutra
 
-   * 🟢 Verde: inclinação para direita 
+   * 🟢 Verde: inclinação para cima
 
-   * 🔴 Vermelho: inclinação para esquerda 
+   * 🔴 Vermelho: inclinação para baixo
  
 3. Controle do servo motor
 - O ângulo do servo é ajustado de acordo os valores de aceleração no eixo x
