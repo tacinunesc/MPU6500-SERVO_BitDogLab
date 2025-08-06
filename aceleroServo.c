@@ -1,19 +1,18 @@
-#include <stdio.h>                   // Biblioteca padrão de entrada/saída
-#include "pico/stdlib.h"             // Funções essenciais da Raspberry Pi Pico
-#include "hardware/i2c.h"            // Comunicação I2C com periféricos
+#include <stdio.h>
+#include <math.h>                      // Funções matemáticas
+#include "pico/stdlib.h"
+#include "hardware/i2c.h"
 
-#include "mpu6500.h"                 // Sensor MPU6500
-#include "inc/ssd1306.h"            // Controle OLED
-#include "inc/ssd1306_fonts.h"      // Fontes OLED
+#include "mpu6500.h"
+#include "inc/ssd1306.h"
+#include "inc/ssd1306_fonts.h"
+#include "servo.h"                     // Inclui função mover_servo_por_eixos()
 
-#include "servo.h"                   // Controle do servo motor 
-
-// --- Definições das portas utilizadas pelo MPU6500 no i2c0---
+// --- Definições de hardware ---
 #define I2C_PORT i2c0
 #define I2C_SDA 0
 #define I2C_SCL 1
 
-//---Definições da portas GPIOs utilizadas pelos LEDs---
 #define LED_AZUL     12
 #define LED_VERDE    11
 #define LED_VERMELHO 13
@@ -35,7 +34,6 @@ int main() {
     while (!stdio_usb_connected()) sleep_ms(100);
     printf("Sistema iniciado: MPU6500 + Servo + LEDs\n");
 
-    // I2C inicialização
     i2c_init(I2C_PORT, 400 * 1000);
     gpio_set_function(I2C_SDA, GPIO_FUNC_I2C);
     gpio_set_function(I2C_SCL, GPIO_FUNC_I2C);
@@ -49,51 +47,58 @@ int main() {
     mpu6500_init(I2C_PORT);
     configurar_leds();
     desligar_leds();
-    inicializar_pwm_servo(); //  Controle servo
+    inicializar_pwm_servo();
 
-       while (1) {
+    char buffer[32];
+
+    while (1) {
         mpu6500_data_t dados;
-        mpu6500_read_raw(I2C_PORT, &dados);  // Lê dados brutos do acelerômetro
+        mpu6500_read_raw(I2C_PORT, &dados);
 
-        // Converte os dados em valores reais de aceleração (g)
         float acc_x = dados.accel[0] / 16384.0f;
         float acc_y = dados.accel[1] / 16384.0f;
         float acc_z = dados.accel[2] / 16384.0f;
 
-        // Move servo de acordo com aceleração no eixo X
-        float angulo = mover_servo_por_eixo_x(acc_x);
+        float angulo = mover_servo_por_eixos(acc_x, acc_y, acc_z);
 
-        desligar_leds(); // Desliga todos os LEDs antes de decidir o próximo
+        desligar_leds();
 
-        // Acende LED conforme a inclinação detectada
-        if (acc_x < -0.5f) {
-            gpio_put(LED_VERMELHO, 1);  // Inclinação à esquerda
-        } else if (acc_x > 0.5f) {
-            gpio_put(LED_VERDE, 1);     // Inclinação à direita
+        // LEDs baseados na inclinação detectada
+        if (acc_x < -0.5f || acc_y < -0.5f || acc_z < -0.5f) {
+            gpio_put(LED_VERMELHO, 1);
+        } else if (acc_x > 0.5f || acc_y > 0.5f || acc_z > 0.5f) {
+            gpio_put(LED_VERDE, 1);
         } else {
-            gpio_put(LED_AZUL, 1);      // Posição neutra
+            gpio_put(LED_AZUL, 1);
         }
 
-        // Imprime dados no terminal
-        printf("Acel X: %.2fg | Servo: %.0f°\n", acc_x, angulo);
+        // Terminal serial
+        printf("Acc X: %.2f | Y: %.2f | Z: %.2f | Servo: %.0f°\n", acc_x, acc_y, acc_z, angulo);
 
-        // Exibe dados no display OLED
-        char buffer[32];
+        // OLED com 5 linhas
         ssd1306_Fill(Black);
         ssd1306_SetCursor(0, 0);
         ssd1306_WriteString("Monitor MPU/SERVO", Font_7x10, White);
 
-        snprintf(buffer, sizeof(buffer), "Acel: %.1f acc", acc_x);
         ssd1306_SetCursor(0, 12);
-        ssd1306_WriteString(buffer, Font_7x10, White);
-
         snprintf(buffer, sizeof(buffer), "Servo: %.0f graus", angulo);
+         ssd1306_WriteString(buffer, Font_7x10, White);
+
+        snprintf(buffer, sizeof(buffer), "EIXO_X: %.2f", acc_x);
         ssd1306_SetCursor(0, 24);
         ssd1306_WriteString(buffer, Font_7x10, White);
 
-        ssd1306_UpdateScreen(); // Atualiza OLED com os dados
+        snprintf(buffer, sizeof(buffer), "EIXO_Y: %.2f", acc_y);
+        ssd1306_SetCursor(0, 36);
+        ssd1306_WriteString(buffer, Font_7x10, White);
 
-        sleep_ms(500); // Aguarda meio segundo antes da próxima leitura
+        snprintf(buffer, sizeof(buffer), "EIXO_Z: %.2f ", acc_z);
+        ssd1306_SetCursor(0, 48);
+        ssd1306_WriteString(buffer, Font_7x10, White);
+
+
+        ssd1306_UpdateScreen();
+        sleep_ms(500);
     }
 
     return 0;
