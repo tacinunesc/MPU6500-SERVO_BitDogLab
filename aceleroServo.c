@@ -1,33 +1,17 @@
 #include <stdio.h>
-#include <math.h>                      // Funções matemáticas
+#include <math.h>
 #include "pico/stdlib.h"
 #include "hardware/i2c.h"
 
 #include "mpu6500.h"
 #include "inc/ssd1306.h"
 #include "inc/ssd1306_fonts.h"
-#include "servo.h"                     // Inclui função mover_servo_por_eixos()
+#include "servo.h"
+#include "leds.h"
 
-// --- Definições de hardware ---
 #define I2C_PORT i2c0
 #define I2C_SDA 0
 #define I2C_SCL 1
-
-#define LED_AZUL     12
-#define LED_VERDE    11
-#define LED_VERMELHO 13
-
-void configurar_leds() {
-    gpio_init(LED_AZUL);     gpio_set_dir(LED_AZUL, GPIO_OUT);
-    gpio_init(LED_VERDE);    gpio_set_dir(LED_VERDE, GPIO_OUT);
-    gpio_init(LED_VERMELHO); gpio_set_dir(LED_VERMELHO, GPIO_OUT);
-}
-
-void desligar_leds() {
-    gpio_put(LED_AZUL, 0);
-    gpio_put(LED_VERDE, 0);
-    gpio_put(LED_VERMELHO, 0);
-}
 
 int main() {
     stdio_init_all();
@@ -63,26 +47,23 @@ int main() {
 
         desligar_leds();
 
-        // LEDs baseados na inclinação detectada
         if (acc_x < -0.5f || acc_y < -0.5f || acc_z < -0.5f) {
-            gpio_put(LED_VERMELHO, 1);
+            gpio_put(13, 1);
         } else if (acc_x > 0.5f || acc_y > 0.5f || acc_z > 0.5f) {
-            gpio_put(LED_VERDE, 1);
+            gpio_put(11, 1);
         } else {
-            gpio_put(LED_AZUL, 1);
+            gpio_put(12, 1);
         }
 
-        // Terminal serial
         printf("Acc X: %.2f | Y: %.2f | Z: %.2f | Servo: %.0f°\n", acc_x, acc_y, acc_z, angulo);
 
-        // OLED com 5 linhas
         ssd1306_Fill(Black);
         ssd1306_SetCursor(0, 0);
         ssd1306_WriteString("Monitor MPU/SERVO", Font_7x10, White);
 
         ssd1306_SetCursor(0, 12);
         snprintf(buffer, sizeof(buffer), "Servo: %.0f graus", angulo);
-         ssd1306_WriteString(buffer, Font_7x10, White);
+        ssd1306_WriteString(buffer, Font_7x10, White);
 
         snprintf(buffer, sizeof(buffer), "EIXO_X: %.2f", acc_x);
         ssd1306_SetCursor(0, 24);
@@ -95,7 +76,6 @@ int main() {
         snprintf(buffer, sizeof(buffer), "EIXO_Z: %.2f ", acc_z);
         ssd1306_SetCursor(0, 48);
         ssd1306_WriteString(buffer, Font_7x10, White);
-
 
         ssd1306_UpdateScreen();
         sleep_ms(500);

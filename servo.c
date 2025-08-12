@@ -2,6 +2,8 @@
 #include "pico/stdlib.h"
 #include "hardware/pwm.h"
 #include "servo.h"
+#include "leds.h"
+#include <math.h>
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -24,15 +26,13 @@ void inicializar_pwm_servo() {
 float mover_servo_por_eixos(float acc_x, float acc_y, float acc_z) {
     static float angulo_anterior = -1;
 
-    // Calcula inclinação usando os três eixos
     float angulo_raw = atan2f(acc_x, sqrtf(acc_y * acc_y + acc_z * acc_z)) * (180.0f / M_PI);
     float angulo = 90.0f + angulo_raw;
 
     if (angulo < 0) angulo = 0;
     if (angulo > 180) angulo = 180;
 
-    // Mapeia para faixas discretas
-    int faixa = angulo / 5.625f; // Divisão em 32 faixas
+    int faixa = angulo / 5.625f;
     switch (faixa) {
         case 0: angulo = 0; break;
         case 1: angulo = 10; break;
@@ -70,11 +70,10 @@ float mover_servo_por_eixos(float acc_x, float acc_y, float acc_z) {
         default: angulo = 180; break;
     }
 
-    // Inverte rotação se o dispositivo estiver horizontal
     float direcao = (acc_y > 0.5f || acc_y < -0.5f) ? -1.0f : 1.0f;
     float passo = ((angulo > angulo_anterior) ? 1 : -1) * direcao;
 
-    if (angulo_anterior < 0) angulo_anterior = angulo; // Inicialização segura
+    if (angulo_anterior < 0) angulo_anterior = angulo;
 
     if (angulo != angulo_anterior) {
         for (float a = angulo_anterior + passo; passo > 0 ? a <= angulo : a >= angulo; a += passo) {
@@ -84,7 +83,20 @@ float mover_servo_por_eixos(float acc_x, float acc_y, float acc_z) {
         angulo_anterior = angulo;
     }
 
-    // Pulso fixo
+    desligar_leds();
+    if (fabs(acc_x) > fabs(acc_y) && fabs(acc_x) > fabs(acc_z)) {
+        if (acc_x < -0.2f) gpio_put(13, 1);
+        else if (acc_x > 0.2f) gpio_put(11, 1);
+        else gpio_put(12, 1);
+    } else if (fabs(acc_y) > fabs(acc_x) && fabs(acc_y) > fabs(acc_z)) {
+        if (acc_y < -0.2f) gpio_put(13, 1);
+        else if (acc_y > 0.2f) gpio_put(11, 1);
+        else gpio_put(12, 1);
+    } else {
+        if (acc_z > 0.8f) gpio_put(12, 1);
+        else gpio_put(13, 1);
+    }
+
     float pulso_ms = 1.5f;
     uint16_t nivel_pwm = (uint16_t)((pulso_ms / 20.0f) * 20000.0f);
     pwm_set_gpio_level(SERVO_PIN, nivel_pwm);
