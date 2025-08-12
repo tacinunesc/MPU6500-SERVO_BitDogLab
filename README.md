@@ -54,16 +54,19 @@ A cada segundo, o sistema:
 
    * 🔵 Azul: inclinação neutra
 
-   * 🟢 Verde: inclinação para cima
+   * 🟢 Verde: inclinação para direita ou para baixo
 
-   * 🔴 Vermelho: inclinação para baixo
+   * 🔴 Vermelho: inclinação para esquerda ou para cima
  
 3. Controle do servo motor
-- O ângulo do servo é ajustado de acordo os valores de aceleração no eixo x
-- Com isso, enquando o sensor de movimento detecatar aceleração for menor que -0.5 o led vermelho é ativo e indica que está inclinado para cima, se for mais que 0.5 o led verde será ativado e a inclinação está para baixo e entre -0.5 e 0.5 indica que está no meio.
+- O ângulo do servo é ajustado de acordo os valores de aceleração nos eixos x, y e z
 
 ## 📦 Dependências
 
-mpu6500.h para o sensor de movimento
+mpu6500.h para o sensor de aceleração
 
 ssd1306.h e ssd1306_fonts.h para o display OLED
+
+servo.h para atuador servo motor
+
+leds.h para função de ativar e desativar os LEDs
