@@ -55,7 +55,17 @@ int main() {
             gpio_put(12, 1);
         }
 
-        printf("Acc X: %.2f | Y: %.2f | Z: %.2f | Servo: %.0f°\n", acc_x, acc_y, acc_z, angulo);
+        // Determinar direção com base nos eixos
+        const char* direcao;
+        if (acc_x > 0.5f) direcao = "Dir";
+        else if (acc_x < -0.5f) direcao = "Esq";
+        else if (acc_y > 0.5f) direcao = "Frente";
+        else if (acc_y < -0.5f) direcao = "Tras";
+        else if (acc_z > 0.5f) direcao = "Cima";
+        else if (acc_z < -0.5f) direcao = "Baixo";
+        else direcao = "Neutro";
+
+        printf("Acc X: %.2f | Y: %.2f | Z: %.2f | Servo: %.0f° | Direcao: %s\n", acc_x, acc_y, acc_z, angulo, direcao);
 
         ssd1306_Fill(Black);
         ssd1306_SetCursor(0, 0);
@@ -69,11 +79,12 @@ int main() {
         ssd1306_SetCursor(0, 24);
         ssd1306_WriteString(buffer, Font_7x10, White);
 
-        snprintf(buffer, sizeof(buffer), "EIXO_Y: %.2f", acc_y);
+        // Linha combinada: EIXO_Y + Direcao
+        snprintf(buffer, sizeof(buffer), "Y: %.2f Dir: %s", acc_y, direcao);
         ssd1306_SetCursor(0, 36);
         ssd1306_WriteString(buffer, Font_7x10, White);
 
-        snprintf(buffer, sizeof(buffer), "EIXO_Z: %.2f ", acc_z);
+        snprintf(buffer, sizeof(buffer), "EIXO_Z: %.2f", acc_z);
         ssd1306_SetCursor(0, 48);
         ssd1306_WriteString(buffer, Font_7x10, White);
 
