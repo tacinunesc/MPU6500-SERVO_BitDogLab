@@ -16,6 +16,7 @@ display Oled inclusos na placa Raspberry Pi Pico W (BItDogLab).
 ## 🛠️ Estrutura do projeto
 - aceleroServo.c – Programa principal em C que faz leitura movimento, com base nesta informação utiliza o servo motor girar no especificado no código e essa informação é exibida no porta serial e no visor oled da BitDogLab
 - mpu6500.c - Onde fica as definições do sensor de movimento
+- servo.c - Onde fica as definições do atuador servo motor
 - Pasta inc - Onde esta localizada as informações da oled
 - CMakeLists.txt – Configuração do build usando o Pico SDK
 
