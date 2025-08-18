@@ -1,4 +1,4 @@
-# 🏃‍♀️ Sensor de Movimento MPU6500 + Servo Motor atuando com Pico W (BitDogLab)
+# 🏃‍♀️ Sensor de Aceleração MPU6500 + Servo Motor atuando com Pico W (BitDogLab)
 ![Linguagem](https://img.shields.io/badge/Linguagem-C-blue.svg)
 ![Plataforma](https://img.shields.io/badge/Plataforma-Raspberry%20Pi%20Pico-purple.svg)
 ![Sensor](https://img.shields.io/badge/Sensor-MPU6500-yellow.svg)
